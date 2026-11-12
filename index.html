@@ -24,6 +24,7 @@ h3{margin:0;font-size:15px}small{color:var(--mu);font-weight:400}
 .t button{position:absolute;top:0;inset-inline-start:0;padding:0 6px;border-radius:0 0 8px 0;line-height:18px;background:#000a;color:#fff;border:0}
 .meter{height:10px;background:var(--bd);border-radius:9px;overflow:hidden}.meter i{display:block;height:100%;width:0;background:var(--ac)}
 label{display:grid;gap:2px;color:var(--mu);font-size:13px}label.row{display:flex;gap:8px;align-items:center}
+body.clean main>*:not(#stage){display:none}body.clean main{max-width:none;padding:0}body.clean #stage{height:100vh;border-radius:0}body.clean #badge{display:none}
 img.p{width:46px}.p{position:absolute;bottom:0;font-size:34px;animation:fl 1.8s ease-out forwards;pointer-events:none}
 @keyframes fl{to{transform:translateY(-48vh) rotate(20deg);opacity:0}}
 .a-bounce{animation:bn .5s}.a-shake{animation:sk .5s}.a-pulse{animation:pu .6s}.a-zoom{animation:zm .5s}
@@ -33,7 +34,7 @@ img.p{width:46px}.p{position:absolute;bottom:0;font-size:34px;animation:fl 1.8s 
 @keyframes zm{50%{transform:scale(1.4)}}
 </style></head><body><main>
 <div id="stage"><div id="bob"><div id="av"><img id="im" alt=""><video id="vd" muted playsinline></video></div></div><p id="ph">برای شروع فایل اضافه کنید</p><div id="badge">—</div></div>
-<div class="bar"><button id="mic">🎤 روشن کردن میکروفون</button><button id="pl">🎮 حالت بازی (P)</button><label class="row">پس‌زمینه <input type="color" id="bg" value="#00b140"></label></div>
+<div class="bar"><button id="mic">🎤 روشن کردن میکروفون</button><button id="cl">🧼 فقط اواتار (H)</button><button id="pl">🎮 حالت بازی (P)</button><label class="row">پس‌زمینه <input type="color" id="bg" value="#00b140"></label></div>
 <div class="bar" id="rx"></div>
 <section class="card"><div class="meter"><i id="lv"></i></div>
 <label>آستانه حرف زدن <input type="range" id="tk" min="1" max="100" value="12"></label>
@@ -144,5 +145,13 @@ function renderRx(){
     c.append(d)})
 }
 openDb().then(dbAll).then(rows=>{(rows||[]).sort((a,b)=>a.t-b.t).forEach(o=>{const u=URL.createObjectURL(o.blob);if(files[o.k])files[o.k].push({id:o.id,url:u,v:o.v,t:o.t});else{const m=/^rx(img|snd)(\d)$/.exec(o.k);if(m&&RX[m[2]])RX[m[2]][m[1]]=u}});render();renderRx();setState(base(),true)});
+const isClean=()=>document.body.classList.contains('clean');
+const setClean=on=>{document.body.classList.toggle('clean',on);try{history.replaceState(null,'',on?'#clean':location.pathname+location.search)}catch(e){}};
+$('cl').onclick=()=>setClean(true);
+stage.ondblclick=()=>isClean()&&setClean(false);
+stage.onclick=()=>{if(isClean()&&!analyser)$('mic').click()};
+addEventListener('keydown',e=>{if(e.target.tagName==='INPUT')return;if(e.key==='h'||e.key==='H')setClean(!isClean())});
+addEventListener('hashchange',()=>setClean(location.hash==='#clean'));
+if(location.hash==='#clean')setClean(true);
 render();renderRx();setState('idle',true);frame();
 </script></body></html>
